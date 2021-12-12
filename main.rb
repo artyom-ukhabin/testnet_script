@@ -3,62 +3,39 @@
 require "pry-byebug"
 require "bitcoin"
 
-require_relative "services/generator"
-require_relative "services/receiver"
+require_relative "services/key_manager"
 require_relative "services/sender"
 require_relative "services/stats"
 require_relative "services/client"
 require_relative "services/builder"
+require_relative "services/btc_formatter"
 
 class Main
-  KEY_FILENAME= "private_key"
-  DESTINATION_ADDRESS = "tb1qaqt22ey88htyhe3m7tx3kw8jswxg8x54fsx3w2lry5j40n3s56yq4xj9ms"
-  BTC_DELIMITER = 100000000.0
-
-  def initialize(destination)
-    @destination = destination
-    @key = nil
+  def initialize
+    @wallet = nil
+    @key_manager = KeyManager.new
     @sender = Sender.new
     @stats = Stats.new
   end
 
   def run
-    Bitcoin.network = :testnet3
+    Bitcoin.network = :testnet3 # config?
 
-    purse_address = ""
-    key_lines = ""
-    if File.file?(KEY_FILENAME)
-      key_lines = File.readlines("private_key").map(&:chomp)
-      purse_address = key_lines[2]
-    end
+    puts "\n"
+
+    @wallet = @key_manager.load
+    log_wallet_status(@wallet)
 
     loop do
       show_menu
 
-      input = gets.chomp
-      puts "\n"
+      input = gets.chomp; puts "\n"
 
       case input
-      when "1"
-        unless purse_address.empty?
-          puts "Address is already present: #{purse_address}. Are you sure? y/n:"
-          confirm = gets.chomp
-          puts "\n"
-          generate_key if confirm == "y"
-        else
-          generate_key
-        end
-      when "2" then get_balance(purse_address)
-      when "3"
-        # puts "Specify receiver address: "
-        # addr_to = gets.chomp
-        addr_to = DESTINATION_ADDRESS
-        # puts "Specify amount in satoshi: "
-        # amount = gets.chomp.to_i
-        amount = 20000
-        pay(key_lines, addr_to, amount)
+      when "1" then generate_key
+      when "2" then get_balance
+      when "3" then pay
       when "4" then break
-      when "5" then break
       else repeat_user_input
       end
     end
@@ -66,21 +43,10 @@ class Main
 
   private
 
-  def generate_key
-    @key = Generator.call
-    puts "Key for testnet has been generated. \n"
-    puts "Address is: #{@key.addr} \n\n"
-  end
-
-  def get_balance(address)
-    balance = @stats.balance(address)
-    puts "balance is #{balance / BTC_DELIMITER} BTC \n\n"
-  end
-
-  def pay(key_lines, addr_to, amount)
-    result = @sender.pay(key_lines, addr_to, amount)
-    binding.pry
-    puts "Completed succesfully, transaction id is: #{result["idx"]}"
+  def log_wallet_status(wallet)
+    !wallet.nil? ?
+      (puts "Wallet is found, address: #{wallet.addr} \n\n") :
+      (puts "Wallet is not found, generate a new one, please \n\n")
   end
 
   def show_menu
@@ -94,7 +60,40 @@ class Main
   def repeat_user_input
     puts "Repeat your input, please \n\n"
   end
+
+  def generate_key
+    unless @wallet.nil?
+      puts "Address is already present: #{@wallet.addr}. Are you sure? y/n:"
+      confirm = gets.chomp; puts "\n"
+      return unless confirm == "y"
+    end
+
+    @wallet = @key_manager.generate
+    puts "Key for testnet has been generated. \n"
+    puts "Address is: #{@wallet.addr} \n\n"
+  end
+
+  def get_balance
+    balance = @stats.balance(@wallet.addr)
+    puts "balance is #{BtcFormatter.format(balance)} BTC \n\n"
+  end
+
+  def pay
+    puts "Specify receiver address: "
+    addr_to = gets.chomp
+    puts "Specify amount in satoshi: "
+    amount = gets.chomp.to_f; puts "\n"
+
+    result = @sender.pay(@wallet, addr_to, amount)
+    if result[:success]
+      puts "\nCompleted succesfully, transaction id is: #{result[:idx]}\n\n"
+    else
+      puts "\n"
+      puts "HTTP status: #{result[:status]}" if result[:status]
+      puts result[:message] if result[:message]
+      puts "\n\n"
+    end
+  end
 end
 
-destination = ARGV[0]
-Main.new(destination).run
+Main.new.run

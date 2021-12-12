@@ -2,31 +2,31 @@
 
 class Stats
   BALANCE_KEY = "chain_stats.funded_txo_sum"
+  BTC_DELIMITER = (10**8).to_f
 
   def initialize
     @client = Client.new
   end
 
-  # хэдеры для джсон запроса?
-  # https://github.com/yegor256/sibit/blob/master/lib/sibit/json.rb
   def balance(address)
-    address_data = @client.get(address_path(address))
-    address_data.dig(*BALANCE_KEY.split("."))
+    utxo = confirmed_utxo(address)
+    utxo.reduce(0) { |result, utxo| result + utxo["value"] }
   end
 
+  def confirmed_utxo(address)
+    utxo(address).filter { |utxo| utxo["status"]["confirmed"] }
+  end
+
+  # написать об этом
   def utxo(address)
-    @client.get(utxo_path(address))
+    @client.get(utxo_path(address))[:response]
   end
 
   def tx(tx_id)
-    @client.get(tx_path(tx_id))
+    @client.get(tx_path(tx_id))[:response]
   end
 
   private
-
-  def address_path(address)
-    "address/#{address}"
-  end
 
   def utxo_path(address)
     "address/#{address}/utxo"

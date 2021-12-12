@@ -3,7 +3,6 @@
     ln -s /usr/local/Cellar/openssl@3/3.0.0_1/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib
     ln -s /usr/local/Cellar/openssl@3/3.0.0_1/lib/libssl.dylib /usr/local/lib/libssl.dylib
 
-- рефактор
 - спеки
 
 Python:
@@ -14,6 +13,7 @@ Python:
 
 - Подписывать на https://coinb.in нужно wif - 'cS19UUNroS5GCC8GzMw2NeBjjKVmXX12dFArzjmBBpTHohz1v9vU'
 
-- Получилось отправить только на https://api.blockchair.com/bitcoin/testnet
-  Транзакция - f0a21ca12cdd0356b9f5a091ee84aca14fa033c09e9c8192efc7d561c1c73ef1
-- Чекнуть если денег меньше чем fee + input
+Внедрить: Dry-cli, dry-container?
+
+Первый кошелек: 83ecd75a11d865e311bdf163f7095c61990c82d369e25ea6f9851982dfb12182
+Второй кошелек: tb1qaqt22ey88htyhe3m7tx3kw8jswxg8x54fsx3w2lry5j40n3s56yq4xj9ms
