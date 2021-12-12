@@ -11,6 +11,7 @@ require_relative "services/client"
 require_relative "services/builder"
 
 class Main
+  KEY_FILENAME= "private_key"
   DESTINATION_ADDRESS = "tb1qaqt22ey88htyhe3m7tx3kw8jswxg8x54fsx3w2lry5j40n3s56yq4xj9ms"
   BTC_DELIMITER = 100000000.0
 
@@ -23,8 +24,13 @@ class Main
 
   def run
     Bitcoin.network = :testnet3
-    key_lines = File.readlines("private_key").map(&:chomp)
-    purse_address = key_lines[2]
+
+    purse_address = ""
+    key_lines = ""
+    if File.file?(KEY_FILENAME)
+      key_lines = File.readlines("private_key").map(&:chomp)
+      purse_address = key_lines[2]
+    end
 
     loop do
       show_menu

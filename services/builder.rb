@@ -12,20 +12,26 @@ class Builder
 
     build_tx do |t|
       utxo.each do |utxo_hash|
-        raw_prev_tx = @stats.tx(utxo_hash["txid"])
-        transformed_prev_tx = transform_format(raw_prev_tx, utxo_hash["vout"])
-        prev_tx = Bitcoin::P::Tx.from_hash(transformed_prev_tx)
+        # raw_prev_tx = @stats.tx(utxo_hash["txid"])
+        # transformed_prev_tx = transform_format(raw_prev_tx, utxo_hash["vout"])
+        # prev_tx = Bitcoin::P::Tx.from_hash(transformed_prev_tx)
 
         # puts utxo_hash["txid"]
         # puts @stats.tx(utxo_hash["txid"])["vout"][utxo_hash["vout"]]["scriptpubkey"]
 
         # binding.pry
-        puts transformed_prev_tx["out"][utxo_hash["vout"]]["scriptPubKey"]
+        puts utxo_hash["txid"]
+        a = Bitcoin::Script.from_string("76a914b81420a39f9bf5647a02d6e3af5a4932a4eae93888ac")
+        # binding.pry
+        # binding.pry
+        # puts transformed_prev_tx["out"][utxo_hash["vout"]]["scriptPubKey"]
+        # puts prev_tx.to_hash
 
         t.input do |i|
-          i.prev_out prev_tx
-          # i.prev_out utxo_hash["txid"]
+          # i.prev_out prev_tx
+          i.prev_out utxo_hash["txid"]
           i.prev_out_index utxo_hash["vout"]
+          i.prev_out_script = a.chunks.first
           # i.prev_out_script = @stats.tx(utxo_hash["txid"])["vout"][utxo_hash["vout"]]["scriptpubkey"]
           i.signature_key key
         end

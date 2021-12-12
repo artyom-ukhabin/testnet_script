@@ -31,7 +31,7 @@ class Sender
 
   def push(tx)
     path = "tx"
-    body = { "tx" => CGI.escape(tx.to_payload.bth) }
+    body = { data: CGI.escape(tx.to_payload.bth) }
     @client.post(path, body)
   end
 

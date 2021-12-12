@@ -1,5 +1,19 @@
 Уже сделано:
   - поставил openssl вместо маковского => засимлинкал либ крипто - была ошибка "bin/ruby is loading libcrypto in an unsafe way"
+    ln -s /usr/local/Cellar/openssl@3/3.0.0_1/lib/libcrypto.dylib /usr/local/lib/libcrypto.dylib
+    ln -s /usr/local/Cellar/openssl@3/3.0.0_1/lib/libssl.dylib /usr/local/lib/libssl.dylib
 
 - рефактор
 - спеки
+
+Python:
+  - BlockstreamAPI.get_unspent_testnet,
+  - BlockchairAPI.get_unspent_testnet,
+  - SmartbitAPI.get_unspent_testnet,  # Limit 1000
+  - BitcoreAPI.get_unspent_testnet,  # No limit
+
+- Подписывать на https://coinb.in нужно wif - 'cS19UUNroS5GCC8GzMw2NeBjjKVmXX12dFArzjmBBpTHohz1v9vU'
+
+- Получилось отправить только на https://api.blockchair.com/bitcoin/testnet
+  Транзакция - f0a21ca12cdd0356b9f5a091ee84aca14fa033c09e9c8192efc7d561c1c73ef1
+- Чекнуть если денег меньше чем fee + input
