@@ -2,7 +2,6 @@
 
 class Stats
   BALANCE_KEY = "chain_stats.funded_txo_sum"
-  BTC_DELIMITER = (10**8).to_f
 
   def initialize
     @client = Client.new
