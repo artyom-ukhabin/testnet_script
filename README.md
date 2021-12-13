@@ -1,5 +1,6 @@
 # Prerequisites
 - `Ruby`
+- `bundler`
 - `open_ssl`
 
 # Launch
