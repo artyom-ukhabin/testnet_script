@@ -14,7 +14,6 @@ class Stats
     utxo(address).filter { |utxo| utxo["status"]["confirmed"] }
   end
 
-  # написать об этом
   def utxo(address)
     @client.get(utxo_path(address))[:response]
   end
