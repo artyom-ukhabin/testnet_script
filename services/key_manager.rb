@@ -3,6 +3,10 @@
 class KeyManager
   KEY_FILENAME = "private_key"
 
+  def initialize
+    Bitcoin.network = :testnet3
+  end
+
   def load
     return unless File.file?(KEY_FILENAME)
     priv_key = File.read("private_key")

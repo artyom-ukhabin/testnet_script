@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Stats
-  BALANCE_KEY = "chain_stats.funded_txo_sum"
-
   def initialize
     @client = Client.new
   end

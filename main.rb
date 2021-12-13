@@ -12,18 +12,15 @@ require_relative "services/btc_formatter"
 
 class Main
   def initialize
-    @wallet = nil
+    Bitcoin.network = :testnet3
     @key_manager = KeyManager.new
+    @wallet = @key_manager.load
     @sender = Sender.new
     @stats = Stats.new
   end
 
   def run
-    Bitcoin.network = :testnet3 # config?
-
     puts "\n"
-
-    @wallet = @key_manager.load
     log_wallet_status(@wallet)
 
     loop do
@@ -95,5 +92,3 @@ class Main
     end
   end
 end
-
-Main.new.run
